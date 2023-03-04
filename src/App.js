@@ -1,24 +1,23 @@
-import logo from './logo.svg';
 import './App.css';
+import Header from './components/header';
+import Card from './components/card';
+import Layout from './components/standard-layout';
+import { useNavigate } from 'react-router';
 
 function App() {
+
+  const navigate = useNavigate();
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Layout>
+        <Card
+          title='Five Crowns'
+          description='Start a new game of Five Crowns'
+          btnText='Play'
+          imageSrc='https://ludologists.com/wp-content/uploads/2019/12/Five-Crowns-1024x1024.png'
+          onClick={() => navigate('/five-crowns')}
+        />
+    </Layout>
   );
 }
 
