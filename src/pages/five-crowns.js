@@ -1,5 +1,5 @@
 import Layout from "../components/standard-layout"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PlayerCreationCard from "../components/playerCard";
 import ConditionalView from "../components/conditional-view";
 import PlayerScoringCard from "../components/playerScoringCard";
@@ -23,6 +23,16 @@ const FiveCrowns = () => {
     const [currentRoundScores, setCurrentRoundScores] = useState({});
     const [nextRoundReady, setNextRoundReady] = useState(false);
 
+    const loadState = () => {
+        if (!localStorage.getItem("five-crowns-save"))
+            return alert("No save data could be found.");
+        const saved = JSON.parse(localStorage.getItem("five-crowns-save"));
+        setPlayerData(saved.playerData);
+        setCurrentRound(saved.currentRound);
+        setCurrentStage(saved.currentStage);
+        setCurrentRoundScores(saved.currentRoundScores);
+    }
+
     const addPlayer = () => {
         if (!typedName)
             return;
@@ -43,6 +53,20 @@ const FiveCrowns = () => {
         setCurrentRoundScores(old => ({...old, [playerName]: score}));
         setNextRoundReady(Object.keys(currentRoundScores).every(key => currentRoundScores[key] !== ''));
     }
+
+    useEffect(() => {
+
+        if (playerData.length === 0)
+            return;
+
+        const saved = {
+            playerData,
+            currentRound,
+            currentStage,
+            currentRoundScores,
+        };
+        localStorage.setItem("five-crowns-save", JSON.stringify(saved));
+    }, [playerData, currentRound, currentStage, currentRoundScores])
 
     const nextRound = () => {
         if (currentRound === 13) {
@@ -71,6 +95,7 @@ const FiveCrowns = () => {
         setCurrentStage(ADD_PLAYERS);
         setCurrentRoundScores({});
         setNextRoundReady(false);
+        localStorage.setItem("five-crowns-save", "");
     }
 
     return (
@@ -84,8 +109,12 @@ const FiveCrowns = () => {
                             <button className="btn btn-square text-2xl" onClick={addPlayer}>+</button>
                         </div>
                     </div>
+                    <button onClick={loadState} className="btn btn-secondary">Load in progress game</button>
                     <ConditionalView show={playerData.length > 1}>
-                        <button onClick={() => setCurrentStage(ROUNDS)} className="btn btn-primary">Start Game</button>
+                        <button onClick={() => {
+                            setCurrentStage(ROUNDS);
+                            }}
+                        className="btn btn-primary">Start Game</button>
                     </ConditionalView>
 
                     {playerData.map(player => (
